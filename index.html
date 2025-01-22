@@ -46,7 +46,7 @@
             background-color: white;
         }
 
-        /* Transcription Panel Styling */
+        /* ✅ Transcription Panel with Proper Wrapping */
         #transcription {
             width: 40%;
             height: 600px;
@@ -54,10 +54,12 @@
             padding: 15px;
             border: 1px solid #ccc;
             background: #fff;
-            white-space: pre-wrap; /* ✅ Wrap long lines */
-            word-wrap: break-word; /* ✅ Ensure words break properly */
             font-size: 16px;
             line-height: 1.5;
+            white-space: normal; /* ✅ Allows line wrapping */
+            word-wrap: break-word; /* ✅ Breaks long words */
+            overflow-wrap: break-word; /* ✅ Ensures words break */
+            word-break: break-word; /* ✅ Break words if necessary */
         }
 
         /* Navigation Buttons */
@@ -106,10 +108,8 @@
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.2.0";  // Increment with every change
+        const SCRIPT_VERSION = "1.2.1";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
-
-        console.log("Starting script...");
 
         // List of images from your GitHub repo
         const images = [
@@ -126,23 +126,20 @@
         let currentIndex = 0;
         let transcriptions = {};
 
-        console.log("Fetching JSON transcription data...");
-
         // Fetch JSON transcription data
         fetch("https://heggkj.github.io/newman/newman_transcript.json")
             .then(response => response.json())
             .then(data => {
                 transcriptions = data;
-                console.log("Loaded transcription keys:", Object.keys(transcriptions));
+                console.log("✅ JSON Loaded");
                 loadTranscription(currentIndex);
                 loadFirstImage();
             })
             .catch(error => {
-                console.error("Error loading JSON:", error);
+                console.error("❌ Error loading JSON:", error);
                 alert("Error loading JSON!");
             });
 
-        console.log("Initializing OpenSeadragon...");
         // Initialize OpenSeadragon viewer
         const viewer = OpenSeadragon({
             id: "openseadragon",
@@ -151,7 +148,7 @@
 
         function loadFirstImage() {
             let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-            console.log("Loading first image:", imageUrl);
+            console.log("📜 Loading first image:", imageUrl);
             viewer.open({
                 type: "image",
                 url: imageUrl
@@ -161,25 +158,18 @@
         function loadTranscription(index) {
             let imageKey = images[index].replace(".jpg", "").trim();
 
-            console.log("Fetching transcription for:", imageKey);
-            console.log("Available keys in JSON:", Object.keys(transcriptions));
-
             if (transcriptions.hasOwnProperty(imageKey)) {
                 let rawText = transcriptions[imageKey];
-                console.log(`✅ Raw transcription for ${imageKey}:`, rawText);
 
                 if (!rawText || rawText.trim().length === 0) {
-                    console.warn(`⚠️ Transcription text is EMPTY for: ${imageKey}`);
                     rawText = "No transcription available.";
                 }
 
                 let cleanedText = rawText.split(/\[PAGE \d+.*?\]/)[0].trim();
-                console.log("📌 Cleaned transcription:", cleanedText);
 
-                document.getElementById("transcription").innerHTML = `<pre>${cleanedText}</pre>`;
+                document.getElementById("transcription").innerHTML = `<div>${cleanedText}</div>`;
             } else {
-                console.warn(`⚠️ No transcription found for: ${imageKey}`);
-                document.getElementById("transcription").innerHTML = "<pre>No transcription available.</pre>";
+                document.getElementById("transcription").innerHTML = "<div>No transcription available.</div>";
             }
         }
 
@@ -187,7 +177,7 @@
             if (currentIndex < images.length - 1) {
                 currentIndex++;
                 let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-                console.log("Next page:", imageUrl);
+                console.log("➡️ Next page:", imageUrl);
                 viewer.open({
                     type: "image",
                     url: imageUrl
@@ -200,7 +190,7 @@
             if (currentIndex > 0) {
                 currentIndex--;
                 let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-                console.log("Previous page:", imageUrl);
+                console.log("⬅️ Previous page:", imageUrl);
                 viewer.open({
                     type: "image",
                     url: imageUrl
