@@ -53,6 +53,10 @@
     </div>
 
     <script>
+        alert("JavaScript is running!"); // Debugging check
+
+        console.log("Starting script...");
+
         // List of images from your GitHub repo
         const images = [
             "SC0313_Ms_003.jpg",
@@ -68,20 +72,84 @@
         let currentIndex = 0;
         let transcriptions = {};
 
+        console.log("Fetching JSON transcription data...");
+
         // Fetch JSON transcription data
         fetch("https://heggkj.github.io/newman/newman_transcript.json")
             .then(response => response.json())
             .then(data => {
                 transcriptions = data;
-                console.log("Loaded transcription keys:", Object.keys(transcriptions)); // Debugging
+                console.log("Loaded transcription keys:", Object.keys(transcriptions));
                 loadTranscription(currentIndex);
-                loadFirstImage();  // Load first image only after JSON is ready
+                loadFirstImage();
             })
-            .catch(error => console.error("Error loading JSON:", error));
+            .catch(error => {
+                console.error("Error loading JSON:", error);
+                alert("Error loading JSON!");
+            });
 
+        console.log("Initializing OpenSeadragon...");
         // Initialize OpenSeadragon viewer
         const viewer = OpenSeadragon({
             id: "openseadragon",
             prefixUrl: "https://openseadragon.github.io/openseadragon/images/"
         });
 
+        function loadFirstImage() {
+            let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
+            console.log("Loading first image:", imageUrl);
+            viewer.open({
+                type: "image",
+                url: imageUrl
+            });
+        }
+
+        function normalizeKey(key) {
+            return key.trim().toLowerCase();
+        }
+
+        function loadTranscription(index) {
+            let imageKey = normalizeKey(images[index].replace(".jpg", ""));
+            let availableKeys = Object.keys(transcriptions).map(normalizeKey);
+
+            console.log("Fetching transcription for:", imageKey);
+
+            let matchKey = availableKeys.find(k => k === imageKey);
+            if (matchKey) {
+                let cleanedText = transcriptions[matchKey].split(/\[PAGE \d+.*?\]/)[0];
+                document.getElementById("transcription").innerHTML = `<pre>${cleanedText}</pre>`;
+            } else {
+                console.warn("No transcription found for:", imageKey);
+                document.getElementById("transcription").innerHTML = "<pre>No transcription available.</pre>";
+            }
+        }
+
+        function nextPage() {
+            if (currentIndex < images.length - 1) {
+                currentIndex++;
+                let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
+                console.log("Next page:", imageUrl);
+                viewer.open({
+                    type: "image",
+                    url: imageUrl
+                });
+                loadTranscription(currentIndex);
+            }
+        }
+
+        function prevPage() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
+                console.log("Previous page:", imageUrl);
+                viewer.open({
+                    type: "image",
+                    url: imageUrl
+                });
+                loadTranscription(currentIndex);
+            }
+        }
+    </script>
+
+</body>
+</html>
