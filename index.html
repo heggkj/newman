@@ -107,11 +107,11 @@
         }
 
         function loadTranscription(index) {
-            let imageKey = normalizeKey(images[index].replace(".jpg", ""));
-            let availableKeys = Object.keys(transcriptions).map(normalizeKey);
+            let imageKey = images[index].replace(".jpg", "").trim().toLowerCase();
+            let availableKeys = Object.keys(transcriptions).map(k => k.trim().toLowerCase());
         
             console.log("Fetching transcription for:", imageKey);
-            console.log("Available keys in JSON:", availableKeys); // Debug available keys
+            console.log("Available keys in JSON:", availableKeys);
         
             let matchKey = availableKeys.find(k => k === imageKey);
             
