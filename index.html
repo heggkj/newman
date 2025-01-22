@@ -46,7 +46,7 @@
             background-color: white;
         }
 
-        /* ✅ Transcription Panel with Tighter Line Breaks */
+        /* ✅ Transcription Panel with Proper Wrapping */
         #transcription {
             width: 40%;
             height: 600px;
@@ -55,11 +55,11 @@
             border: 1px solid #ccc;
             background: #fff;
             font-size: 16px;
-            line-height: 1.2; /* ✅ Reduces vertical spacing */
-            white-space: normal; /* ✅ Allows line wrapping */
-            word-wrap: break-word; /* ✅ Breaks long words */
-            overflow-wrap: break-word; /* ✅ Ensures words break */
-            word-break: break-word; /* ✅ Break words if necessary */
+            line-height: 1.2;
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         /* Navigation Buttons */
@@ -108,12 +108,13 @@
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.3.0";  // Increment with every change
+        const SCRIPT_VERSION = "1.3.1";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
         let images = []; // Image list will be loaded dynamically
         let currentIndex = 0;
         let transcriptions = {};
+        let viewer; // Declare viewer globally
 
         // Fetch JSON transcription data
         fetch("https://heggkj.github.io/newman/newman_transcript.json")
@@ -133,17 +134,29 @@
             .then(data => {
                 images = data.images;
                 console.log("✅ Loaded image list:", images.length, "images.");
-                loadTranscription(currentIndex);
-                loadFirstImage();
+                initializeViewer(); // Initialize OpenSeadragon after images load
             })
             .catch(error => {
                 console.error("❌ Error loading image list:", error);
                 alert("Error loading image list!");
             });
 
-        function loadFirstImage() {
+        function initializeViewer() {
             if (images.length === 0) return;
+
+            viewer = OpenSeadragon({
+                id: "openseadragon",
+                prefixUrl: "https://openseadragon.github.io/openseadragon/images/"
+            });
+
+            loadFirstImage();
+            loadTranscription(currentIndex);
+        }
+
+        function loadFirstImage() {
+            if (!viewer || images.length === 0) return;
             let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
+            console.log("📜 Loading first image:", imageUrl);
             viewer.open({ type: "image", url: imageUrl });
         }
 
