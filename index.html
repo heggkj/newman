@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuscript Viewer</title>
+    <script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .viewer-container {
+            display: flex;
+            width: 90%;
+            max-width: 1200px;
+            gap: 20px;
+        }
+        #openseadragon {
+            width: 60%;
+            height: 600px;
+            border: 1px solid #ccc;
+        }
+        #transcription {
+            width: 40%;
+            height: 600px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+        }
+        .nav-buttons {
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Manuscript Viewer</h1>
+    <div class="viewer-container">
+        <div id="openseadragon"></div>
+        <div id="transcription"><p>Loading transcription...</p></div>
+    </div>
+    
+    <div class="nav-buttons">
+        <button onclick="prevPage()">Previous</button>
+        <button onclick="nextPage()">Next</button>
+    </div>
+
+    <script>
+        // List of images from your GitHub repo
+        const images = [
+            "SC0313_Ms_003.jpg",
+            "SC0313_Ms_004.jpg",
+            "SC0313_Ms_005.jpg",
+            "SC0313_Ms_006.jpg",
+            "SC0313_Ms_007.jpg",
+            "SC0313_Ms_008.jpg",
+            "SC0313_Ms_009.jpg",
+            "SC0313_Ms_010.jpg"
+        ];
+
+        let currentIndex = 0;
+        let transcriptions = {};
+
+        // Load JSON transcription data from GitHub Pages
+        fetch("https://heggkj.github.io/newman/newman_transcript.json")
+            .then(response => response.json())
+            .then(data => {
+                transcriptions = data;
+                loadTranscription(currentIndex);
+            })
+            .catch(error => console.error("Error loading JSON:", error));
+
+        // Initialize OpenSeadragon viewer
+        const viewer = OpenSeadragon({
+            id: "openseadragon",
+            prefixUrl: "https://openseadragon.github.io/openseadragon/images/",
+            tileSources: [`https://heggkj.github.io/newman/${images[currentIndex]}`]
+        });
+
+        function loadTranscription(index) {
+            let imageKey = images[index].replace(".jpg", ""); // Extract key from filename
+            document.getElementById("transcription").innerHTML = 
+                transcriptions[imageKey] ? `<p>${transcriptions[imageKey]}</p>` : "<p>No transcription available.</p>";
+        }
+
+        function nextPage() {
+            if (currentIndex < images.length - 1) {
+                currentIndex++;
+                viewer.open([`https://heggkj.github.io/newman/${images[currentIndex]}`]);
+                loadTranscription(currentIndex);
+            }
+        }
+
+        function prevPage() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                viewer.open([`https://heggkj.github.io/newman/${images[currentIndex]}`]);
+                loadTranscription(currentIndex);
+            }
+        }
+    </script>
+
+</body>
+</html>
