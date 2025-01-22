@@ -80,7 +80,10 @@
         const viewer = OpenSeadragon({
             id: "openseadragon",
             prefixUrl: "https://openseadragon.github.io/openseadragon/images/",
-            tileSources: [`https://heggkj.github.io/newman/${images[currentIndex]}`]
+            tileSources: {
+                type: "image",
+                url: `https://heggkj.github.io/newman/${images[currentIndex]}`
+            }
         });
 
         function loadTranscription(index) {
@@ -92,7 +95,10 @@
         function nextPage() {
             if (currentIndex < images.length - 1) {
                 currentIndex++;
-                viewer.open([`https://heggkj.github.io/newman/${images[currentIndex]}`]);
+                viewer.open({
+                    type: "image",
+                    url: `https://heggkj.github.io/newman/${images[currentIndex]}`
+                });
                 loadTranscription(currentIndex);
             }
         }
@@ -100,7 +106,10 @@
         function prevPage() {
             if (currentIndex > 0) {
                 currentIndex--;
-                viewer.open([`https://heggkj.github.io/newman/${images[currentIndex]}`]);
+                viewer.open({
+                    type: "image",
+                    url: `https://heggkj.github.io/newman/${images[currentIndex]}`
+                });
                 loadTranscription(currentIndex);
             }
         }
