@@ -68,11 +68,6 @@
         let currentIndex = 0;
         let transcriptions = {};
 
-        // Normalize JSON keys to prevent case sensitivity & space mismatches
-        function normalizeKey(key) {
-            return key.trim().toLowerCase();
-        }
-
         // Fetch JSON transcription data
         fetch("https://heggkj.github.io/newman/newman_transcript.json")
             .then(response => response.json())
@@ -80,6 +75,7 @@
                 transcriptions = data;
                 console.log("Loaded transcription keys:", Object.keys(transcriptions)); // Debugging
                 loadTranscription(currentIndex);
+                loadFirstImage();  // Load first image only after JSON is ready
             })
             .catch(error => console.error("Error loading JSON:", error));
 
@@ -89,5 +85,3 @@
             prefixUrl: "https://openseadragon.github.io/openseadragon/images/"
         });
 
-        function loadFirstImage() {
-            let image
