@@ -55,7 +55,7 @@
             border: 1px solid #ccc;
             background: #fff;
             font-size: 16px;
-            line-height: 1.0; /* ✅ Reduces vertical spacing */
+            line-height: 1.2; /* ✅ Reduces vertical spacing */
             white-space: normal; /* ✅ Allows line wrapping */
             word-wrap: break-word; /* ✅ Breaks long words */
             overflow-wrap: break-word; /* ✅ Ensures words break */
@@ -108,21 +108,10 @@
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.2.3";  // Increment with every change
+        const SCRIPT_VERSION = "1.3.0";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
-        // List of images from your GitHub repo
-        const images = [
-            "SC0313_Ms_003.jpg",
-            "SC0313_Ms_004.jpg",
-            "SC0313_Ms_005.jpg",
-            "SC0313_Ms_006.jpg",
-            "SC0313_Ms_007.jpg",
-            "SC0313_Ms_008.jpg",
-            "SC0313_Ms_009.jpg",
-            "SC0313_Ms_010.jpg"
-        ];
-
+        let images = []; // Image list will be loaded dynamically
         let currentIndex = 0;
         let transcriptions = {};
 
@@ -132,59 +121,42 @@
             .then(data => {
                 transcriptions = data;
                 console.log("✅ JSON Loaded");
-                loadTranscription(currentIndex);
-                loadFirstImage();
             })
             .catch(error => {
                 console.error("❌ Error loading JSON:", error);
                 alert("Error loading JSON!");
             });
 
-        // Initialize OpenSeadragon viewer
-        const viewer = OpenSeadragon({
-            id: "openseadragon",
-            prefixUrl: "https://openseadragon.github.io/openseadragon/images/"
-        });
+        // Fetch image list dynamically
+        fetch("https://heggkj.github.io/newman/image_list.json")
+            .then(response => response.json())
+            .then(data => {
+                images = data.images;
+                console.log("✅ Loaded image list:", images.length, "images.");
+                loadTranscription(currentIndex);
+                loadFirstImage();
+            })
+            .catch(error => {
+                console.error("❌ Error loading image list:", error);
+                alert("Error loading image list!");
+            });
 
         function loadFirstImage() {
+            if (images.length === 0) return;
             let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-            console.log("📜 Loading first image:", imageUrl);
-            viewer.open({
-                type: "image",
-                url: imageUrl
-            });
+            viewer.open({ type: "image", url: imageUrl });
         }
 
         function loadTranscription(index) {
             let imageKey = images[index].replace(".jpg", "").trim();
-
-            if (transcriptions.hasOwnProperty(imageKey)) {
-                let rawText = transcriptions[imageKey];
-
-                if (!rawText || rawText.trim().length === 0) {
-                    rawText = "No transcription available.";
-                }
-
-                let cleanedText = rawText.split(/\[PAGE \d+.*?\]/)[0].trim();
-
-                // ✅ Replace newlines with <br> to keep line breaks
-                let formattedText = cleanedText.replace(/\n/g, "<br>");
-
-                document.getElementById("transcription").innerHTML = `<div>${formattedText}</div>`;
-            } else {
-                document.getElementById("transcription").innerHTML = "<div>No transcription available.</div>";
-            }
+            let cleanedText = transcriptions[imageKey]?.split(/\[PAGE \d+.*?\]/)[0].trim().replace(/\n/g, "<br>") || "No transcription available.";
+            document.getElementById("transcription").innerHTML = `<div>${cleanedText}</div>`;
         }
 
         function nextPage() {
             if (currentIndex < images.length - 1) {
                 currentIndex++;
-                let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-                console.log("➡️ Next page:", imageUrl);
-                viewer.open({
-                    type: "image",
-                    url: imageUrl
-                });
+                loadFirstImage();
                 loadTranscription(currentIndex);
             }
         }
@@ -192,12 +164,7 @@
         function prevPage() {
             if (currentIndex > 0) {
                 currentIndex--;
-                let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-                console.log("⬅️ Previous page:", imageUrl);
-                viewer.open({
-                    type: "image",
-                    url: imageUrl
-                });
+                loadFirstImage();
                 loadTranscription(currentIndex);
             }
         }
