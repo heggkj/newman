@@ -46,7 +46,7 @@
             background-color: white;
         }
 
-        /* ✅ Transcription Panel with Proper Wrapping */
+        /* ✅ Transcription Panel with Line Breaks + Wrapping */
         #transcription {
             width: 40%;
             height: 600px;
@@ -108,7 +108,7 @@
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.2.1";  // Increment with every change
+        const SCRIPT_VERSION = "1.2.2";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
         // List of images from your GitHub repo
@@ -167,7 +167,10 @@
 
                 let cleanedText = rawText.split(/\[PAGE \d+.*?\]/)[0].trim();
 
-                document.getElementById("transcription").innerHTML = `<div>${cleanedText}</div>`;
+                // ✅ Replace newlines with <br> to keep line breaks
+                let formattedText = cleanedText.replace(/\n/g, "<br>");
+
+                document.getElementById("transcription").innerHTML = `<div>${formattedText}</div>`;
             } else {
                 document.getElementById("transcription").innerHTML = "<div>No transcription available.</div>";
             }
