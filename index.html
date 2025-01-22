@@ -31,7 +31,7 @@
             padding: 10px;
             border: 1px solid #ccc;
             background: #f9f9f9;
-            white-space: pre-wrap; /* Ensure text wraps properly */
+            white-space: pre-wrap; /* Preserve new lines */
         }
         .nav-buttons {
             margin-top: 10px;
@@ -68,6 +68,21 @@
         let currentIndex = 0;
         let transcriptions = {};
 
+        // Normalize JSON keys to prevent case sensitivity & space mismatches
+        function normalizeKey(key) {
+            return key.trim().toLowerCase();
+        }
+
+        // Fetch JSON transcription data
+        fetch("https://heggkj.github.io/newman/newman_transcript.json")
+            .then(response => response.json())
+            .then(data => {
+                transcriptions = data;
+                console.log("Loaded transcription keys:", Object.keys(transcriptions)); // Debugging
+                loadTranscription(currentIndex);
+            })
+            .catch(error => console.error("Error loading JSON:", error));
+
         // Initialize OpenSeadragon viewer
         const viewer = OpenSeadragon({
             id: "openseadragon",
@@ -75,61 +90,4 @@
         });
 
         function loadFirstImage() {
-            let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-            console.log("Loading first image:", imageUrl);  // Debugging log
-            viewer.open({
-                type: "image",
-                url: imageUrl
-            });
-        }
-
-        // Fetch JSON and then load first image
-        fetch("https://heggkj.github.io/newman/newman_transcript.json")
-            .then(response => response.json())
-            .then(data => {
-                transcriptions = data;
-                loadTranscription(currentIndex);
-                loadFirstImage();  // <-- Load first image after JSON
-            })
-            .catch(error => console.error("Error loading JSON:", error));
-
-         function loadTranscription(index) {
-            let imageKey = images[index].replace(".jpg", ""); // Extract key from filename
-            let transcriptionText = transcriptions[imageKey] || "No transcription available.";
-        
-            // Ensure we only load the text for the current page (up to the next [PAGE X] marker)
-            let cleanedText = transcriptionText.split(/\[PAGE \d+.*?\]/)[0];
-        
-            // Preserve line breaks using <pre>
-            document.getElementById("transcription").innerHTML = `<pre>${cleanedText}</pre>`;
-        }
-
-        function nextPage() {
-            if (currentIndex < images.length - 1) {
-                currentIndex++;
-                let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-                console.log("Next page:", imageUrl);
-                viewer.open({
-                    type: "image",
-                    url: imageUrl
-                });
-                loadTranscription(currentIndex);
-            }
-        }
-
-        function prevPage() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-                console.log("Previous page:", imageUrl);
-                viewer.open({
-                    type: "image",
-                    url: imageUrl
-                });
-                loadTranscription(currentIndex);
-            }
-        }
-    </script>
-
-</body>
-</html>
+            let image
