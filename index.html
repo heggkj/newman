@@ -54,7 +54,7 @@
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.1.1";  // Increment with every change
+        const SCRIPT_VERSION = "1.1.2";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
         console.log("Starting script...");
@@ -111,29 +111,26 @@
         }
 
         function loadTranscription(index) {
-            let imageKey = images[index].replace(".jpg", "").trim().toLowerCase();
-            let availableKeys = Object.keys(transcriptions).map(k => k.trim().toLowerCase());
+            let imageKey = images[index].replace(".jpg", "").trim();
         
             console.log("Fetching transcription for:", imageKey);
-            console.log("Available keys in JSON:", availableKeys);
+            console.log("Available keys in JSON:", Object.keys(transcriptions));
         
-            let matchKey = availableKeys.find(k => k === imageKey);
+            if (transcriptions.hasOwnProperty(imageKey)) {
+                let rawText = transcriptions[imageKey];
+                console.log(`✅ Raw transcription for ${imageKey}:`, rawText);
         
-            if (matchKey) {
-                let rawText = transcriptions[matchKey];
-                console.log(`Raw transcription for ${matchKey}:`, rawText); // Debugging log
-        
-                let cleanedText = rawText ? rawText.split(/\[PAGE \d+.*?\]/)[0].trim() : "No transcription available.";
-                console.log("Cleaned transcription:", cleanedText); // Debugging log
-        
-                if (cleanedText === "") {
-                    console.warn("Transcription text is EMPTY for:", matchKey);
-                    cleanedText = "No transcription available.";
+                if (!rawText || rawText.trim().length === 0) {
+                    console.warn(`⚠️ Transcription text is EMPTY for: ${imageKey}`);
+                    rawText = "No transcription available.";
                 }
+        
+                let cleanedText = rawText.split(/\[PAGE \d+.*?\]/)[0].trim();
+                console.log("📌 Cleaned transcription:", cleanedText);
         
                 document.getElementById("transcription").innerHTML = `<pre>${cleanedText}</pre>`;
             } else {
-                console.warn("No transcription found for:", imageKey);
+                console.warn(`⚠️ No transcription found for: ${imageKey}`);
                 document.getElementById("transcription").innerHTML = "<pre>No transcription available.</pre>";
             }
         }
