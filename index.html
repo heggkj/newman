@@ -31,6 +31,7 @@
             padding: 10px;
             border: 1px solid #ccc;
             background: #f9f9f9;
+            white-space: pre-wrap; /* Ensure text wraps properly */
         }
         .nav-buttons {
             margin-top: 10px;
@@ -68,52 +69,4 @@
         let transcriptions = {};
 
         // Load JSON transcription data from GitHub Pages
-        fetch("https://heggkj.github.io/newman/newman_transcript.json")
-            .then(response => response.json())
-            .then(data => {
-                transcriptions = data;
-                loadTranscription(currentIndex);
-            })
-            .catch(error => console.error("Error loading JSON:", error));
-
-        // Initialize OpenSeadragon viewer
-        const viewer = OpenSeadragon({
-            id: "openseadragon",
-            prefixUrl: "https://openseadragon.github.io/openseadragon/images/",
-            tileSources: {
-                type: "image",
-                url: `https://heggkj.github.io/newman/${images[currentIndex]}`
-            }
-        });
-
-        function loadTranscription(index) {
-            let imageKey = images[index].replace(".jpg", ""); // Extract key from filename
-            document.getElementById("transcription").innerHTML = 
-                transcriptions[imageKey] ? `<p>${transcriptions[imageKey]}</p>` : "<p>No transcription available.</p>";
-        }
-
-        function nextPage() {
-            if (currentIndex < images.length - 1) {
-                currentIndex++;
-                viewer.open({
-                    type: "image",
-                    url: `https://heggkj.github.io/newman/${images[currentIndex]}`
-                });
-                loadTranscription(currentIndex);
-            }
-        }
-
-        function prevPage() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                viewer.open({
-                    type: "image",
-                    url: `https://heggkj.github.io/newman/${images[currentIndex]}`
-                });
-                loadTranscription(currentIndex);
-            }
-        }
-    </script>
-
-</body>
-</html>
+        fetch("https://heggkj.git
