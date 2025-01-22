@@ -111,12 +111,14 @@
         function loadTranscription(index) {
             let imageKey = normalizeKey(images[index].replace(".jpg", ""));
             let availableKeys = Object.keys(transcriptions).map(normalizeKey);
-
+        
             console.log("Fetching transcription for:", imageKey);
-
+            console.log("Available keys in JSON:", availableKeys); // Debug available keys
+        
             let matchKey = availableKeys.find(k => k === imageKey);
+            
             if (matchKey) {
-                let cleanedText = transcriptions[matchKey].split(/\[PAGE \d+.*?\]/)[0];
+                let cleanedText = transcriptions[matchKey] ? transcriptions[matchKey].split(/\[PAGE \d+.*?\]/)[0] : "No transcription available.";
                 document.getElementById("transcription").innerHTML = `<pre>${cleanedText}</pre>`;
             } else {
                 console.warn("No transcription found for:", imageKey);
