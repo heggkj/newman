@@ -46,7 +46,7 @@
             background-color: white;
         }
 
-        /* ✅ Transcription Panel with Line Breaks + Wrapping */
+        /* ✅ Transcription Panel with Tighter Line Breaks */
         #transcription {
             width: 40%;
             height: 600px;
@@ -55,7 +55,7 @@
             border: 1px solid #ccc;
             background: #fff;
             font-size: 16px;
-            line-height: 1.5;
+            line-height: 1.2; /* ✅ Reduces vertical spacing */
             white-space: normal; /* ✅ Allows line wrapping */
             word-wrap: break-word; /* ✅ Breaks long words */
             overflow-wrap: break-word; /* ✅ Ensures words break */
@@ -108,7 +108,7 @@
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.2.2";  // Increment with every change
+        const SCRIPT_VERSION = "1.2.3";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
         // List of images from your GitHub repo
