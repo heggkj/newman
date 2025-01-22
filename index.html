@@ -93,10 +93,15 @@
             })
             .catch(error => console.error("Error loading JSON:", error));
 
-        function loadTranscription(index) {
+         function loadTranscription(index) {
             let imageKey = images[index].replace(".jpg", ""); // Extract key from filename
-            let transcriptionText = transcriptions[imageKey] ? transcriptions[imageKey] : "No transcription available.";
-            document.getElementById("transcription").innerHTML = `<pre>${transcriptionText}</pre>`;
+            let transcriptionText = transcriptions[imageKey] || "No transcription available.";
+        
+            // Ensure we only load the text for the current page (up to the next [PAGE X] marker)
+            let cleanedText = transcriptionText.split(/\[PAGE \d+.*?\]/)[0];
+        
+            // Preserve line breaks using <pre>
+            document.getElementById("transcription").innerHTML = `<pre>${cleanedText}</pre>`;
         }
 
         function nextPage() {
