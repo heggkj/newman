@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A Miserable Revenge - Manuscript Viewer</title>
     <script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script> <!-- ✅ FontAwesome for icons -->
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -100,7 +102,7 @@
             background-color: #4B0082; /* Purple */
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 15px;
             font-size: 16px;
             font-weight: bold;
             border-radius: 5px;
@@ -115,6 +117,11 @@
         button:disabled {
             background-color: #aaa;
             cursor: not-allowed;
+        }
+
+        /* ✅ FontAwesome Icon Styling */
+        .icon {
+            font-size: 18px;
         }
     </style>
 </head>
@@ -132,118 +139,104 @@
     <div class="controls-container">
         <div class="jump-container">
             <label for="pageInput">Jump to Page:</label>
-            <input type="number" id="pageInput" min="1" max="459" onchange="jumpToPage()">
+            <input type="number" id="pageInput" min="1" max="459">
+            <button onclick="jumpToPage()">GO</button>
             <span>of 459</span>
         </div>
         <div class="nav-buttons">
-            <button onclick="prevPage()">Previous</button>
-            <button onclick="nextPage()">Next</button>
+            <button onclick="firstPage()"><i class="fas fa-angle-double-left icon"></i></button>
+            <button onclick="prevPage()"><i class="fas fa-angle-left icon"></i></button>
+            <button onclick="nextPage()"><i class="fas fa-angle-right icon"></i></button>
+            <button onclick="lastPage()"><i class="fas fa-angle-double-right icon"></i></button>
         </div>
     </div>
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.6.0";  // Increment with every change
+        const SCRIPT_VERSION = "1.7.0";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
         let images = []; // Image list will be loaded dynamically
         let currentIndex = 0;
         let transcriptions = {};
         let viewer;
-        let totalPages = 459; // Total number of manuscript pages
-
-        // Fetch JSON transcription data
-        function loadTranscriptionData() {
-            return fetch("https://heggkj.github.io/newman/newman_transcript.json")
-                .then(response => response.json())
-                .then(data => {
-                    transcriptions = data;
-                    console.log("✅ JSON Loaded");
-                })
-                .catch(error => {
-                    console.error("❌ Error loading JSON:", error);
-                    alert("Error loading JSON!");
-                });
-        }
-
-        // Fetch image list dynamically
-        function loadImageList() {
-            return fetch("https://heggkj.github.io/newman/image_list.json")
-                .then(response => response.json())
-                .then(data => {
-                    images = data.images;
-                    console.log("✅ Loaded image list:", images.length, "images.");
-                })
-                .catch(error => {
-                    console.error("❌ Error loading image list:", error);
-                    alert("Error loading image list!");
-                });
-        }
+        let totalPages = 459;
 
         async function initializeViewer() {
-            await loadImageList();
-            await loadTranscriptionData();
+            await fetch("https://heggkj.github.io/newman/image_list.json")
+                .then(response => response.json())
+                .then(data => images = data.images);
+
+            await fetch("https://heggkj.github.io/newman/newman_transcript.json")
+                .then(response => response.json())
+                .then(data => transcriptions = data);
 
             viewer = OpenSeadragon({
                 id: "openseadragon",
                 prefixUrl: "https://openseadragon.github.io/openseadragon/images/"
             });
 
-            updatePageInput();
-            loadFirstImage();
-            loadTranscription(currentIndex);
+            loadPage(currentIndex);
         }
 
-        function loadFirstImage() {
+        function loadPage(index) {
             if (!viewer || images.length === 0) return;
-            let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-            viewer.open({ type: "image", url: imageUrl });
-        }
 
-        function loadTranscription(index) {
+            let imageUrl = `https://heggkj.github.io/newman/${images[index]}`;
+            viewer.open({ type: "image", url: imageUrl });
+
             let imageKey = images[index].replace(".jpg", "").trim();
             let cleanedText = transcriptions[imageKey]?.split(/\[PAGE \d+.*?\]/)[0].trim().replace(/\n/g, "<br>") || "No transcription available.";
             document.getElementById("transcription").innerHTML = `<div>${cleanedText}</div>`;
+            
             updatePageInput();
+        }
+
+        function updatePageInput() {
+            document.getElementById("pageInput").value = currentIndex + 1;
         }
 
         function nextPage() {
             if (currentIndex < images.length - 1) {
                 currentIndex++;
-                loadFirstImage();
-                loadTranscription(currentIndex);
+                loadPage(currentIndex);
             }
         }
 
         function prevPage() {
             if (currentIndex > 0) {
                 currentIndex--;
-                loadFirstImage();
-                loadTranscription(currentIndex);
+                loadPage(currentIndex);
             }
+        }
+
+        function firstPage() {
+            currentIndex = 0;
+            loadPage(currentIndex);
+        }
+
+        function lastPage() {
+            currentIndex = images.length - 1;
+            loadPage(currentIndex);
         }
 
         function jumpToPage() {
             let pageNum = parseInt(document.getElementById("pageInput").value);
-            if (isNaN(pageNum) || pageNum < 1 || pageNum > 459) {
+            if (isNaN(pageNum) || pageNum < 1 || pageNum > totalPages) {
                 alert("Invalid page number! Must be between 1 and 459.");
                 return;
             }
 
-            let imageName = `SC0313_Ms_${String(pageNum + 2).padStart(3, '0')}.jpg`;
-            let newIndex = images.indexOf(imageName);
+            let newIndex = pageNum - 1;
+            currentIndex = newIndex;
+            loadPage(currentIndex);
+        }
 
-            if (newIndex !== -1) {
-                currentIndex = newIndex;
-                loadFirstImage();
-                loadTranscription(currentIndex);
+        document.getElementById("pageInput").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                jumpToPage();
             }
-        }
-
-        function updatePageInput() {
-            let pageNum = currentIndex + 1; // ✅ Normalize so Page 1 starts at SC0313_Ms_003.jpg
-            document.getElementById("pageInput").value = pageNum;
-        }
+        });
 
         initializeViewer();
     </script>
