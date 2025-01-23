@@ -79,10 +79,15 @@
         }
 
         .jump-container input {
-            width: 100px; /* ✅ Wider input box */
+            width: 50px; /* ✅ Normalized input width */
             padding: 5px;
             font-size: 16px;
             text-align: center;
+        }
+
+        .jump-container label {
+            font-size: 16px;
+            font-weight: bold;
         }
 
         /* Navigation Buttons Right Aligned */
@@ -127,8 +132,8 @@
     <div class="controls-container">
         <div class="jump-container">
             <label for="pageInput">Jump to Page:</label>
-            <input type="text" id="pageInput" readonly>
-            <button onclick="jumpToPage()">Go</button>
+            <input type="number" id="pageInput" min="1" max="459" onchange="jumpToPage()">
+            <span>of 459</span>
         </div>
         <div class="nav-buttons">
             <button onclick="prevPage()">Previous</button>
@@ -138,7 +143,7 @@
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.5.0";  // Increment with every change
+        const SCRIPT_VERSION = "1.6.0";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
         let images = []; // Image list will be loaded dynamically
@@ -219,27 +224,25 @@
         }
 
         function jumpToPage() {
-            let pageNum = parseInt(prompt("Enter a page number (3-461):"));
-            if (isNaN(pageNum) || pageNum < 3 || pageNum > 461) {
-                alert("Invalid page number! Must be between 3 and 461.");
+            let pageNum = parseInt(document.getElementById("pageInput").value);
+            if (isNaN(pageNum) || pageNum < 1 || pageNum > 459) {
+                alert("Invalid page number! Must be between 1 and 459.");
                 return;
             }
 
-            let imageName = `SC0313_Ms_${String(pageNum).padStart(3, '0')}.jpg`;
+            let imageName = `SC0313_Ms_${String(pageNum + 2).padStart(3, '0')}.jpg`;
             let newIndex = images.indexOf(imageName);
 
             if (newIndex !== -1) {
                 currentIndex = newIndex;
                 loadFirstImage();
                 loadTranscription(currentIndex);
-            } else {
-                alert("Page not found.");
             }
         }
 
         function updatePageInput() {
-            let pageNum = currentIndex + 3;
-            document.getElementById("pageInput").value = `${pageNum} of ${totalPages}`;
+            let pageNum = currentIndex + 1; // ✅ Normalize so Page 1 starts at SC0313_Ms_003.jpg
+            document.getElementById("pageInput").value = pageNum;
         }
 
         initializeViewer();
