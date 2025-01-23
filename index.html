@@ -233,10 +233,10 @@
                 alert("Invalid page number! Must be between 1 and 459.");
                 return;
             }
-
+        
             let newIndex = pageNum - 1;
-            currentIndex = newIndex;
-            loadPage(currentIndex);
+            currentIndex = newIndex; // ✅ Update global index
+            loadPage(currentIndex);  // ✅ Ensure the new page and transcript load properly
         }
 
         document.getElementById("pageInput").addEventListener("keypress", function (event) {
