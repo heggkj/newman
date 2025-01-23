@@ -37,22 +37,21 @@
             width: 90%;
             max-width: 1200px;
             gap: 20px;
+            align-items: stretch; /* ✅ Ensure both panels are the same height */
         }
 
-        #openseadragon {
-            width: 60%;
+        #openseadragon, #transcription {
+            width: 50%;
             height: 600px;
             border: 1px solid #ccc;
             background-color: white;
+            box-sizing: border-box;
         }
 
         /* ✅ Transcription Panel with Proper Wrapping */
         #transcription {
-            width: 40%;
-            height: 600px;
             overflow-y: auto;
             padding: 15px;
-            border: 1px solid #ccc;
             background: #fff;
             font-size: 16px;
             line-height: 1.2;
@@ -89,6 +88,24 @@
             background-color: #aaa;
             cursor: not-allowed;
         }
+
+        /* ✅ Jump to Page */
+        .jump-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .jump-container input {
+            width: 60px;
+            padding: 5px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .jump-container button {
+            padding: 5px 15px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -100,15 +117,21 @@
         <div id="openseadragon"></div>
         <div id="transcription"><p>Loading transcription...</p></div>
     </div>
-    
+
     <div class="nav-buttons">
         <button onclick="prevPage()">Previous</button>
         <button onclick="nextPage()">Next</button>
     </div>
 
+    <div class="jump-container">
+        <label for="pageInput">Jump to Page:</label>
+        <input type="number" id="pageInput" min="3" max="461">
+        <button onclick="jumpToPage()">Go</button>
+    </div>
+
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.3.1";  // Increment with every change
+        const SCRIPT_VERSION = "1.4.0";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
         let images = []; // Image list will be loaded dynamically
@@ -156,7 +179,6 @@
         function loadFirstImage() {
             if (!viewer || images.length === 0) return;
             let imageUrl = `https://heggkj.github.io/newman/${images[currentIndex]}`;
-            console.log("📜 Loading first image:", imageUrl);
             viewer.open({ type: "image", url: imageUrl });
         }
 
@@ -179,6 +201,26 @@
                 currentIndex--;
                 loadFirstImage();
                 loadTranscription(currentIndex);
+            }
+        }
+
+        function jumpToPage() {
+            let pageNum = parseInt(document.getElementById("pageInput").value);
+            if (isNaN(pageNum) || pageNum < 3 || pageNum > 461) {
+                alert("Please enter a valid page number between 3 and 461.");
+                return;
+            }
+
+            let imageName = `SC0313_Ms_${String(pageNum).padStart(3, '0')}.jpg`;
+            let newIndex = images.indexOf(imageName);
+
+            if (newIndex !== -1) {
+                currentIndex = newIndex;
+                loadFirstImage();
+                loadTranscription(currentIndex);
+                console.log(`📖 Jumping to page ${pageNum}`);
+            } else {
+                alert("Page not found.");
             }
         }
     </script>
