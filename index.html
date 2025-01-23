@@ -61,10 +61,34 @@
             word-break: break-word;
         }
 
-        /* Navigation Buttons */
-        .nav-buttons {
-            margin-top: 20px;
+        /* ✅ Control Row Styling */
+        .controls-container {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 1200px;
+            margin-top: 15px;
+        }
+
+        /* Jump to Page Left Aligned */
+        .jump-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .jump-container input {
+            width: 60px;
+            padding: 5px;
+            font-size: 16px;
             text-align: center;
+            margin-left: 8px;
+            margin-right: 5px;
+        }
+
+        /* Navigation Buttons Right Aligned */
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
         }
 
         button {
@@ -72,7 +96,6 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            margin: 5px;
             font-size: 16px;
             font-weight: bold;
             border-radius: 5px;
@@ -88,24 +111,6 @@
             background-color: #aaa;
             cursor: not-allowed;
         }
-
-        /* ✅ Jump to Page */
-        .jump-container {
-            margin-top: 15px;
-            text-align: center;
-        }
-
-        .jump-container input {
-            width: 60px;
-            padding: 5px;
-            font-size: 16px;
-            text-align: center;
-        }
-
-        .jump-container button {
-            padding: 5px 15px;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
@@ -118,20 +123,22 @@
         <div id="transcription"><p>Loading transcription...</p></div>
     </div>
 
-    <div class="nav-buttons">
-        <button onclick="prevPage()">Previous</button>
-        <button onclick="nextPage()">Next</button>
-    </div>
-
-    <div class="jump-container">
-        <label for="pageInput">Jump to Page:</label>
-        <input type="number" id="pageInput" min="3" max="461">
-        <button onclick="jumpToPage()">Go</button>
+    <!-- ✅ New Control Row -->
+    <div class="controls-container">
+        <div class="jump-container">
+            <label for="pageInput">Jump to Page:</label>
+            <input type="number" id="pageInput" min="3" max="461">
+            <button onclick="jumpToPage()">Go</button>
+        </div>
+        <div class="nav-buttons">
+            <button onclick="prevPage()">Previous</button>
+            <button onclick="nextPage()">Next</button>
+        </div>
     </div>
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.4.0";  // Increment with every change
+        const SCRIPT_VERSION = "1.4.1";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
         let images = []; // Image list will be loaded dynamically
@@ -173,7 +180,7 @@
             });
 
             loadFirstImage();
-            loadTranscription(currentIndex);
+            loadTranscription(currentIndex); // ✅ Ensure first transcript loads
         }
 
         function loadFirstImage() {
