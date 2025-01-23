@@ -244,6 +244,24 @@
                 jumpToPage();
             }
         });
+        
+        // Listen for keyboard events to navigate pages
+        document.addEventListener("keydown", function (event) {
+            switch (event.key) {
+                case "ArrowLeft": // Left Arrow → Previous Page
+                    prevPage();
+                    break;
+                case "ArrowRight": // Right Arrow → Next Page
+                    nextPage();
+                    break;
+                case "ArrowUp": // Up Arrow → First Page
+                    firstPage();
+                    break;
+                case "ArrowDown": // Down Arrow → Last Page
+                    lastPage();
+                    break;
+            }
+        });
 
         initializeViewer();
     </script>
