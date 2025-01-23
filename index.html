@@ -6,7 +6,7 @@
     <title>A Miserable Revenge - Manuscript Viewer</title>
     <script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script> <!-- ✅ FontAwesome for icons -->
-    
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,26 +34,32 @@
             margin-bottom: 20px;
         }
 
+        /* ✅ Responsive Viewer Container */
         .viewer-container {
             display: flex;
             width: 90%;
-            max-width: 1200px;
+            max-width: 1000px; /* ✅ Reduced width from 1200px → 1000px */
             gap: 20px;
-            align-items: stretch; /* ✅ Ensure both panels are the same height */
+            align-items: stretch;
         }
 
-        #openseadragon, #transcription {
-            width: 50%;
+        /* ✅ Adjust Left Panel (OpenSeadragon Viewer) */
+        #openseadragon {
+            width: 45%; /* ✅ Slightly smaller than transcription panel */
             height: 600px;
             border: 1px solid #ccc;
             background-color: white;
             box-sizing: border-box;
+            padding: 5px; /* ✅ Reduced padding for better image fit */
         }
 
-        /* ✅ Transcription Panel */
+        /* ✅ Adjust Right Panel (Transcription) */
         #transcription {
+            width: 55%; /* ✅ Slightly larger than left panel */
+            height: 600px;
             overflow-y: auto;
             padding: 15px;
+            border: 1px solid #ccc;
             background: #fff;
             font-size: 16px;
             line-height: 1.2;
@@ -68,12 +74,12 @@
             display: flex;
             justify-content: space-between;
             width: 90%;
-            max-width: 1200px;
+            max-width: 1000px; /* ✅ Match new viewer-container width */
             margin-top: 15px;
             align-items: center;
         }
 
-        /* Jump to Page Left Aligned */
+        /* ✅ Jump to Page Block (Left-aligned) */
         .jump-container {
             display: flex;
             align-items: center;
@@ -81,7 +87,7 @@
         }
 
         .jump-container input {
-            width: 50px; /* ✅ Normalized input width */
+            width: 50px;
             padding: 5px;
             font-size: 16px;
             text-align: center;
@@ -92,7 +98,7 @@
             font-weight: bold;
         }
 
-        /* Navigation Buttons Right Aligned */
+        /* ✅ Page Navigation (Right-aligned) */
         .nav-buttons {
             display: flex;
             gap: 10px;
@@ -153,10 +159,10 @@
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.7.0";  // Increment with every change
+        const SCRIPT_VERSION = "1.8.0";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
-        let images = []; // Image list will be loaded dynamically
+        let images = []; 
         let currentIndex = 0;
         let transcriptions = {};
         let viewer;
