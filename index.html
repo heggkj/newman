@@ -48,7 +48,7 @@
             box-sizing: border-box;
         }
 
-        /* ✅ Transcription Panel with Proper Wrapping */
+        /* ✅ Transcription Panel */
         #transcription {
             overflow-y: auto;
             padding: 15px;
@@ -68,21 +68,21 @@
             width: 90%;
             max-width: 1200px;
             margin-top: 15px;
+            align-items: center;
         }
 
         /* Jump to Page Left Aligned */
         .jump-container {
             display: flex;
             align-items: center;
+            gap: 10px;
         }
 
         .jump-container input {
-            width: 60px;
+            width: 100px; /* ✅ Wider input box */
             padding: 5px;
             font-size: 16px;
             text-align: center;
-            margin-left: 8px;
-            margin-right: 5px;
         }
 
         /* Navigation Buttons Right Aligned */
@@ -127,7 +127,7 @@
     <div class="controls-container">
         <div class="jump-container">
             <label for="pageInput">Jump to Page:</label>
-            <input type="number" id="pageInput" min="3" max="461">
+            <input type="text" id="pageInput" readonly>
             <button onclick="jumpToPage()">Go</button>
         </div>
         <div class="nav-buttons">
@@ -138,49 +138,55 @@
 
     <script>
         // Script version
-        const SCRIPT_VERSION = "1.4.1";  // Increment with every change
+        const SCRIPT_VERSION = "1.5.0";  // Increment with every change
         console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
         let images = []; // Image list will be loaded dynamically
         let currentIndex = 0;
         let transcriptions = {};
-        let viewer; // Declare viewer globally
+        let viewer;
+        let totalPages = 459; // Total number of manuscript pages
 
         // Fetch JSON transcription data
-        fetch("https://heggkj.github.io/newman/newman_transcript.json")
-            .then(response => response.json())
-            .then(data => {
-                transcriptions = data;
-                console.log("✅ JSON Loaded");
-            })
-            .catch(error => {
-                console.error("❌ Error loading JSON:", error);
-                alert("Error loading JSON!");
-            });
+        function loadTranscriptionData() {
+            return fetch("https://heggkj.github.io/newman/newman_transcript.json")
+                .then(response => response.json())
+                .then(data => {
+                    transcriptions = data;
+                    console.log("✅ JSON Loaded");
+                })
+                .catch(error => {
+                    console.error("❌ Error loading JSON:", error);
+                    alert("Error loading JSON!");
+                });
+        }
 
         // Fetch image list dynamically
-        fetch("https://heggkj.github.io/newman/image_list.json")
-            .then(response => response.json())
-            .then(data => {
-                images = data.images;
-                console.log("✅ Loaded image list:", images.length, "images.");
-                initializeViewer(); // Initialize OpenSeadragon after images load
-            })
-            .catch(error => {
-                console.error("❌ Error loading image list:", error);
-                alert("Error loading image list!");
-            });
+        function loadImageList() {
+            return fetch("https://heggkj.github.io/newman/image_list.json")
+                .then(response => response.json())
+                .then(data => {
+                    images = data.images;
+                    console.log("✅ Loaded image list:", images.length, "images.");
+                })
+                .catch(error => {
+                    console.error("❌ Error loading image list:", error);
+                    alert("Error loading image list!");
+                });
+        }
 
-        function initializeViewer() {
-            if (images.length === 0) return;
+        async function initializeViewer() {
+            await loadImageList();
+            await loadTranscriptionData();
 
             viewer = OpenSeadragon({
                 id: "openseadragon",
                 prefixUrl: "https://openseadragon.github.io/openseadragon/images/"
             });
 
+            updatePageInput();
             loadFirstImage();
-            loadTranscription(currentIndex); // ✅ Ensure first transcript loads
+            loadTranscription(currentIndex);
         }
 
         function loadFirstImage() {
@@ -193,6 +199,7 @@
             let imageKey = images[index].replace(".jpg", "").trim();
             let cleanedText = transcriptions[imageKey]?.split(/\[PAGE \d+.*?\]/)[0].trim().replace(/\n/g, "<br>") || "No transcription available.";
             document.getElementById("transcription").innerHTML = `<div>${cleanedText}</div>`;
+            updatePageInput();
         }
 
         function nextPage() {
@@ -212,9 +219,9 @@
         }
 
         function jumpToPage() {
-            let pageNum = parseInt(document.getElementById("pageInput").value);
+            let pageNum = parseInt(prompt("Enter a page number (3-461):"));
             if (isNaN(pageNum) || pageNum < 3 || pageNum > 461) {
-                alert("Please enter a valid page number between 3 and 461.");
+                alert("Invalid page number! Must be between 3 and 461.");
                 return;
             }
 
@@ -225,11 +232,17 @@
                 currentIndex = newIndex;
                 loadFirstImage();
                 loadTranscription(currentIndex);
-                console.log(`📖 Jumping to page ${pageNum}`);
             } else {
                 alert("Page not found.");
             }
         }
+
+        function updatePageInput() {
+            let pageNum = currentIndex + 3;
+            document.getElementById("pageInput").value = `${pageNum} of ${totalPages}`;
+        }
+
+        initializeViewer();
     </script>
 
 </body>
