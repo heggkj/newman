@@ -31,18 +31,24 @@
             margin-right: 15px;
         }
 
-        .container {
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panels-container {
             display: flex;
             gap: 20px;
-            height: calc(100vh - 160px);
+            height: 800px;
         }
 
         #viewer {
             width: 65%;
             height: 100%;
-            position: relative;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: white;
         }
 
         #transcript {
@@ -55,24 +61,22 @@
             overflow-y: auto;
         }
 
-        .controls {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.9);
-            padding: 10px 15px;
-            border-radius: 5px;
+        .controls-container {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 15px;
             align-items: center;
-            z-index: 1000;
         }
 
         .jump-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         button {
@@ -99,6 +103,8 @@
         .page-number {
             color: var(--jmu-gray);
             font-weight: bold;
+            min-width: 80px;
+            text-align: center;
         }
 
         pre {
@@ -106,33 +112,39 @@
             font-family: Arial, sans-serif;
             line-height: 1.5;
             color: var(--jmu-gray);
+            margin: 0;
         }
 
         h3 {
             color: var(--jmu-purple);
             margin-top: 0;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <img src="JMU-Logo.png" class="jmu-logo" alt="JMU Logo">
+        <img src="https://www.jmu.edu/_files/img/logo.png" class="jmu-logo" alt="JMU Logo">
         <h1 style="color: var(--jmu-purple); margin: 0;">Special Collections Viewer</h1>
     </div>
 
-    <div class="container">
-        <div id="viewer">
-            <div class="controls">
+    <div class="main-container">
+        <div class="panels-container">
+            <div id="viewer"></div>
+            <div id="transcript"></div>
+        </div>
+        
+        <div class="controls-container">
+            <div class="jump-controls">
+                <input type="number" id="pageInput" min="1" value="1">
+                <button onclick="jumpToPage()">Go to Page</button>
+            </div>
+            <div class="nav-controls">
                 <button id="prev">◄ Previous</button>
                 <span class="page-number" id="pageNum">1/100</span>
                 <button id="next">Next ►</button>
             </div>
-            <div class="jump-controls">
-                <input type="number" id="pageInput" min="1" value="1">
-                <button onclick="jumpToPage()">Go</button>
-            </div>
         </div>
-        <div id="transcript"></div>
     </div>
 
     <script>
