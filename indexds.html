@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newman Manuscript Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/3.1.0/openseadragon.min.js"></script>
+    <style>
+        .container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+        #viewer {
+            width: 60%;
+            height: 800px;
+            border: 1px solid #ccc;
+        }
+        #transcript {
+            width: 35%;
+            height: 800px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .controls {
+            padding: 10px 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button id="prev">Previous</button>
+        <button id="next">Next</button>
+        <span id="pageNum">Page: 1/100</span>
+    </div>
+    <div class="container">
+        <div id="viewer"></div>
+        <div id="transcript"></div>
+    </div>
+
+    <script>
+        let pages = [];
+        let currentPage = 0;
+        let viewer;
+
+        // Initialize OpenSeadragon
+        function initViewer(imageUrl) {
+            if(viewer) {
+                viewer.destroy();
+            }
+            
+            viewer = OpenSeadragon({
+                id: "viewer",
+                prefixUrl: "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/3.1.0/images/",
+                tileSources: {
+                    type: 'image',
+                    url: imageUrl
+                }
+            });
+        }
+
+        // Load JSON data and initialize
+        fetch('newman_transcript.json')
+            .then(response => response.json())
+            .then(data => {
+                // Sort pages numerically
+                pages = Object.keys(data).sort((a, b) => {
+                    const numA = parseInt(a.split('_').pop());
+                    const numB = parseInt(b.split('_').pop());
+                    return numA - numB;
+                });
+
+                // Load first page
+                loadPage(0);
+            });
+
+        function loadPage(index) {
+            currentPage = index;
+            const pageKey = pages[index];
+            
+            // Load image
+            const imageUrl = `${pageKey}.jpg`;
+            initViewer(imageUrl);
+
+            // Load transcript
+            fetch('newman_transcript.json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('transcript').innerHTML = `
+                        <h3>${pageKey}</h3>
+                        <pre>${data[pageKey]}</pre>
+                    `;
+                });
+
+            // Update page counter
+            document.getElementById('pageNum').textContent = `Page: ${currentPage + 1}/${pages.length}`;
+            
+            // Update button states
+            document.getElementById('prev').disabled = currentPage === 0;
+            document.getElementById('next').disabled = currentPage === pages.length - 1;
+        }
+
+        // Event listeners
+        document.getElementById('prev').addEventListener('click', () => {
+            if(currentPage > 0) loadPage(currentPage - 1);
+        });
+
+        document.getElementById('next').addEventListener('click', () => {
+            if(currentPage < pages.length - 1) loadPage(currentPage + 1);
+        });
+    </script>
+</body>
+</html>
