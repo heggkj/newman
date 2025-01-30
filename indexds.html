@@ -1,43 +1,137 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Newman Manuscript Viewer</title>
+    <title>JMU Special Collections - Newman Manuscript Viewer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/3.1.0/openseadragon.min.js"></script>
+    <link href="https://www.jmu.edu/_files/css/jmu-fonts.css" rel="stylesheet">
     <style>
+        :root {
+            --jmu-purple: #4B2D83;
+            --jmu-gold: #DAAA00;
+            --jmu-gray: #666666;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--jmu-purple);
+        }
+
+        .jmu-logo {
+            height: 40px;
+            margin-right: 15px;
+        }
+
         .container {
             display: flex;
             gap: 20px;
-            padding: 20px;
+            height: calc(100vh - 160px);
         }
+
         #viewer {
-            width: 60%;
-            height: 800px;
-            border: 1px solid #ccc;
+            width: 65%;
+            height: 100%;
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+
         #transcript {
             width: 35%;
-            height: 800px;
+            height: 100%;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             overflow-y: auto;
-            padding: 10px;
-            border: 1px solid #ccc;
         }
+
         .controls {
-            padding: 10px 20px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 1000;
         }
+
+        .jump-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
         button {
-            padding: 10px 20px;
-            margin-right: 10px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--jmu-purple);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--jmu-gold);
+        }
+
+        input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 80px;
+        }
+
+        .page-number {
+            color: var(--jmu-gray);
+            font-weight: bold;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            color: var(--jmu-gray);
+        }
+
+        h3 {
+            color: var(--jmu-purple);
+            margin-top: 0;
         }
     </style>
 </head>
 <body>
-    <div class="controls">
-        <button id="prev">Previous</button>
-        <button id="next">Next</button>
-        <span id="pageNum">Page: 1/100</span>
+    <div class="header">
+        <img src="https://www.jmu.edu/_files/img/logo.png" class="jmu-logo" alt="JMU Logo">
+        <h1 style="color: var(--jmu-purple); margin: 0;">Special Collections Viewer</h1>
     </div>
+
     <div class="container">
-        <div id="viewer"></div>
+        <div id="viewer">
+            <div class="controls">
+                <button id="prev">◄ Previous</button>
+                <span class="page-number" id="pageNum">1/100</span>
+                <button id="next">Next ►</button>
+            </div>
+            <div class="jump-controls">
+                <input type="number" id="pageInput" min="1" value="1">
+                <button onclick="jumpToPage()">Go</button>
+            </div>
+        </div>
         <div id="transcript"></div>
     </div>
 
@@ -46,11 +140,8 @@
         let currentPage = 0;
         let viewer;
 
-        // Initialize OpenSeadragon
         function initViewer(imageUrl) {
-            if(viewer) {
-                viewer.destroy();
-            }
+            if(viewer) viewer.destroy();
             
             viewer = OpenSeadragon({
                 id: "viewer",
@@ -58,22 +149,19 @@
                 tileSources: {
                     type: 'image',
                     url: imageUrl
-                }
+                },
+                showNavigationControl: false
             });
         }
 
-        // Load JSON data and initialize
-        fetch('newman_transcript.json')
+        fetch('https://heggkj.github.io/newman/newman_transcript.json')
             .then(response => response.json())
             .then(data => {
-                // Sort pages numerically
                 pages = Object.keys(data).sort((a, b) => {
                     const numA = parseInt(a.split('_').pop());
                     const numB = parseInt(b.split('_').pop());
                     return numA - numB;
                 });
-
-                // Load first page
                 loadPage(0);
             });
 
@@ -81,12 +169,9 @@
             currentPage = index;
             const pageKey = pages[index];
             
-            // Load image
-            const imageUrl = `${pageKey}.jpg`;
-            initViewer(imageUrl);
+            initViewer(`${pageKey}.jpg`);
 
-            // Load transcript
-            fetch('newman_transcript.json')
+            fetch('https://heggkj.github.io/newman/newman_transcript.json')
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('transcript').innerHTML = `
@@ -95,21 +180,23 @@
                     `;
                 });
 
-            // Update page counter
-            document.getElementById('pageNum').textContent = `Page: ${currentPage + 1}/${pages.length}`;
-            
-            // Update button states
+            document.getElementById('pageNum').textContent = `${currentPage + 1}/${pages.length}`;
+            document.getElementById('pageInput').value = currentPage + 1;
             document.getElementById('prev').disabled = currentPage === 0;
             document.getElementById('next').disabled = currentPage === pages.length - 1;
         }
 
-        // Event listeners
-        document.getElementById('prev').addEventListener('click', () => {
-            if(currentPage > 0) loadPage(currentPage - 1);
-        });
+        function jumpToPage() {
+            const page = parseInt(document.getElementById('pageInput').value);
+            if(page >= 1 && page <= pages.length) {
+                loadPage(page - 1);
+            }
+        }
 
-        document.getElementById('next').addEventListener('click', () => {
-            if(currentPage < pages.length - 1) loadPage(currentPage + 1);
+        document.getElementById('prev').addEventListener('click', () => loadPage(currentPage - 1));
+        document.getElementById('next').addEventListener('click', () => loadPage(currentPage + 1));
+        document.getElementById('pageInput').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') jumpToPage();
         });
     </script>
 </body>
