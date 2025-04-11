@@ -1,270 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Miserable Revenge - Manuscript Viewer</title>
-    <script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script> <!-- ✅ FontAwesome for icons -->
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f8f8;
-            margin: 20px;
-        }
-
-        /* Title Styling */
-        h1 {
-            color: #4B0082; /* Deep Purple */
-            font-size: 28px;
-            text-align: center;
-            margin-bottom: 5px;
-        }
-        
-        h2 {
-            color: #8B8000; /* Gold */
-            font-size: 18px;
-            text-align: center;
-            font-style: italic;
-            margin-bottom: 20px;
-        }
-
-        /* ✅ Responsive Viewer Container */
-        .viewer-container {
-            display: flex;
-            width: 90%;
-            max-width: 1000px;
-            gap: 20px;
-            align-items: stretch;
-        }
-
-        /* ✅ Adjust Left Panel (OpenSeadragon Viewer) */
-        #openseadragon {
-            width: 50%; /* ✅ Slightly increased width */
-            height: auto; /* ✅ Ensured equal height */
-            flex-grow: 1;
-            border: 1px solid #ccc;
-            background-color: white;
-            box-sizing: border-box;
-            padding: 0px;
-        }
-
-        /* ✅ Adjust Right Panel (Transcription) */
-        #transcription {
-            width: 50%; /* ✅ Slightly reduced width */
-            height: 600px; /* ✅ Ensured equal height */
-            overflow-y: auto;
-            padding: 15px;
-            border: 1px solid #ccc;
-            background: #fff;
-            font-size: 16px;
-            line-height: 1.2;
-            white-space: normal;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
-
-        /* ✅ Control Row Styling */
-        .controls-container {
-            display: flex;
-            justify-content: space-between;
-            width: 90%;
-            max-width: 1000px;
-            margin-top: 15px;
-            align-items: center;
-        }
-
-        /* ✅ Jump to Page Block (Left-aligned) */
-        .jump-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .jump-container input {
-            width: 50px;
-            padding: 5px;
-            font-size: 16px;
-            text-align: center;
-        }
-
-        .jump-container label {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        /* ✅ Page Navigation (Right-aligned) */
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        button {
-            background-color: #4B0082; /* Purple */
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #8B8000; /* Gold */
-        }
-
-        button:disabled {
-            background-color: #aaa;
-            cursor: not-allowed;
-        }
-
-        /* ✅ FontAwesome Icon Styling */
-        .icon {
-            font-size: 18px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Miserable Revenge - Manuscript Viewer</title>
+  <script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script> <!-- FontAwesome for icons -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8f8f8;
+      margin: 20px;
+    }
+    /* Title Styling */
+    h1 {
+      color: #4B0082; /* Deep Purple */
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+    h2 {
+      color: #8B8000; /* Gold */
+      font-size: 18px;
+      text-align: center;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+    /* Responsive Viewer Container */
+    .viewer-container {
+      display: flex;
+      width: 90%;
+      max-width: 1000px;
+      gap: 20px;
+      align-items: stretch;
+    }
+    /* Adjust Left Panel (OpenSeadragon Viewer) */
+    #openseadragon {
+      width: 50%;
+      height: auto;
+      flex-grow: 1;
+      border: 1px solid #ccc;
+      background-color: white;
+      box-sizing: border-box;
+      padding: 0;
+    }
+    /* Adjust Right Panel (Transcription) */
+    #transcription {
+      width: 50%;
+      height: 600px;
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid #ccc;
+      background: #fff;
+      font-size: 16px;
+      line-height: 1.2;
+      white-space: normal;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+    /* Control Row Styling */
+    .controls-container {
+      display: flex;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 1000px;
+      margin-top: 15px;
+      align-items: center;
+    }
+    /* Jump to Page Block (Left-aligned) */
+    .jump-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .jump-container input {
+      width: 50px;
+      padding: 5px;
+      font-size: 16px;
+      text-align: center;
+    }
+    .jump-container label {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    /* Page Navigation (Right-aligned) */
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      background-color: #4B0082;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #8B8000;
+    }
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+    /* FontAwesome Icon Styling */
+    .icon {
+      font-size: 18px;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>A Miserable Revenge: A Story of Life in Virginia</h1>
-    <h2>by George A. Newman</h2>
+  <h1>A Miserable Revenge: A Story of Life in Virginia</h1>
+  <h2>by George A. Newman</h2>
 
-    <div class="viewer-container">
-        <div id="openseadragon"></div>
-        <div id="transcription"><p>Loading transcription...</p></div>
+  <div class="viewer-container">
+    <div id="openseadragon"></div>
+    <div id="transcription"><p>Loading transcript...</p></div>
+  </div>
+
+  <!-- Control Row -->
+  <div class="controls-container">
+    <div class="jump-container">
+      <label for="pageInput">Jump to Page:</label>
+      <input type="number" id="pageInput" min="1">
+      <button onclick="jumpToPage()">GO</button>
+      <span id="totalPages">of 0</span>
     </div>
-
-    <!-- ✅ New Control Row -->
-    <div class="controls-container">
-        <div class="jump-container">
-            <label for="pageInput">Jump to Page:</label>
-            <input type="number" id="pageInput" min="1" max="459">
-            <button onclick="jumpToPage()">GO</button>
-            <span>of 459</span>
-        </div>
-        <div class="nav-buttons">
-            <button onclick="firstPage()"><i class="fas fa-angle-double-left icon"></i></button>
-            <button onclick="prevPage()"><i class="fas fa-angle-left icon"></i></button>
-            <button onclick="nextPage()"><i class="fas fa-angle-right icon"></i></button>
-            <button onclick="lastPage()"><i class="fas fa-angle-double-right icon"></i></button>
-        </div>
+    <div class="nav-buttons">
+      <button onclick="firstPage()"><i class="fas fa-angle-double-left icon"></i></button>
+      <button onclick="prevPage()"><i class="fas fa-angle-left icon"></i></button>
+      <button onclick="nextPage()"><i class="fas fa-angle-right icon"></i></button>
+      <button onclick="lastPage()"><i class="fas fa-angle-double-right icon"></i></button>
     </div>
+  </div>
 
-    <script>
-        // Script version
-        const SCRIPT_VERSION = "1.9.0";  // Increment with every change
-        console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
+  <script>
+    // Script version
+    const SCRIPT_VERSION = "1.9.0";
+    console.log(`Manuscript Viewer Script - Version: ${SCRIPT_VERSION}`);
 
-        let images = []; 
-        let currentIndex = 0;
-        let transcriptions = {};
-        let viewer;
-        let totalPages = 459;
+    let images = [];
+    let currentIndex = 0;
+    let transcriptions = {};
+    let viewer;
+    let totalPages = 0;
 
-        async function initializeViewer() {
-            await fetch("https://heggkj.github.io/newman/image_list.json")
-                .then(response => response.json())
-                .then(data => images = data.images);
+	async function initializeViewer() {
+	  // Load image_list.json
+	  await fetch("image_list.json")
+		.then(response => response.json())
+		.then(data => { 
+		  // Use data.images if available; otherwise assume data is the array.
+		  images = data.images ? data.images : data;
+		  totalPages = images.length;
+		  document.getElementById("totalPages").innerText = "of " + totalPages;
+		  console.log("Total pages set to:", totalPages);
+		});
+	  
+	  // Load transcript JSON and normalize keys to lower-case
+	  await fetch("newman_transcript.json")
+		.then(response => response.json())
+		.then(data => {
+		  transcriptions = {};
+		  for (let key in data) {
+			transcriptions[key.toLowerCase()] = data[key];
+		  }
+		});
 
-            await fetch("https://heggkj.github.io/newman/newman_transcript.json")
-                .then(response => response.json())
-                .then(data => transcriptions = data);
+	  viewer = OpenSeadragon({
+		id: "openseadragon",
+		prefixUrl: "https://openseadragon.github.io/openseadragon/images/"
+	  });
 
-            viewer = OpenSeadragon({
-                id: "openseadragon",
-                prefixUrl: "https://openseadragon.github.io/openseadragon/images/"
-            });
+	  loadPage(currentIndex);
+	}
 
-            loadPage(currentIndex);
-        }
 
-        function loadPage(index) {
-            if (!viewer || images.length === 0) return;
+    function loadPage(index) {
+      if (!viewer || images.length === 0) return;
 
-            let imageUrl = `https://heggkj.github.io/newman/${images[index]}`;
-            viewer.open({ type: "image", url: imageUrl });
+      // Get the image file from the images array
+      let imageFile = images[index];
+      // Extract the base key from the image filename (strip folder and .jpg)
+      let baseKey = imageFile.replace(/^.*[\\/]/, "").replace(".jpg", "");
+      let transcriptKey = baseKey.toLowerCase();
 
-            let imageKey = images[index].replace(".jpg", "").trim();
-            let cleanedText = transcriptions[imageKey]?.split(/\[PAGE \d+.*?\]/)[0].trim().replace(/\n/g, "<br>") || "No transcription available.";
-            document.getElementById("transcription").innerHTML = `<div>${cleanedText}</div>`;
-            
-            updatePageInput();
-        }
+      // Determine image URL:
+      let imageUrl = imageFile;
+      if (transcriptKey === "sc0313_ms_missing") {
+        // Use the missing page image from the jpegs directory.
+        imageUrl = "jpegs/SC0313_Ms_MISSING.jpg";
+      }
 
-        function updatePageInput() {
-            document.getElementById("pageInput").value = currentIndex + 1;
-        }
+      viewer.open({ type: "image", url: imageUrl });
 
-        function nextPage() {
-            if (currentIndex < images.length - 1) {
-                currentIndex++;
-                loadPage(currentIndex);
-            }
-        }
+      // Lookup transcript using normalized key.
+      let transcript = transcriptions[transcriptKey];
+      if (!transcript) {
+        transcript = "No transcript available.";
+      }
+      document.getElementById("transcription").innerHTML = `<div>${transcript}</div>`;
 
-        function prevPage() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                loadPage(currentIndex);
-            }
-        }
+      updatePageInput();
+    }
 
-        function firstPage() {
-            currentIndex = 0;
-            loadPage(currentIndex);
-        }
+    function updatePageInput() {
+      document.getElementById("pageInput").value = currentIndex + 1;
+    }
 
-        function lastPage() {
-            currentIndex = images.length - 1;
-            loadPage(currentIndex);
-        }
+    function nextPage() {
+      if (currentIndex < images.length - 1) {
+        currentIndex++;
+        loadPage(currentIndex);
+      }
+    }
 
-        function jumpToPage() {
-            let pageNum = parseInt(document.getElementById("pageInput").value);
-            if (isNaN(pageNum) || pageNum < 1 || pageNum > totalPages) {
-                alert("Invalid page number! Must be between 1 and 459.");
-                return;
-            }
-        
-            let newIndex = pageNum - 1;
-            currentIndex = newIndex; // ✅ Update global index
-            loadPage(currentIndex);  // ✅ Ensure the new page and transcript load properly
-        }
+    function prevPage() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        loadPage(currentIndex);
+      }
+    }
 
-        document.getElementById("pageInput").addEventListener("keypress", function (event) {
-            if (event.key === "Enter") {
-                jumpToPage();
-            }
-        });
-        
-        // Listen for keyboard events to navigate pages
-        document.addEventListener("keydown", function (event) {
-            switch (event.key) {
-                case "ArrowLeft": // Left Arrow → Previous Page
-                    prevPage();
-                    break;
-                case "ArrowRight": // Right Arrow → Next Page
-                    nextPage();
-                    break;
-                case "ArrowUp": // Up Arrow → First Page
-                    firstPage();
-                    break;
-                case "ArrowDown": // Down Arrow → Last Page
-                    lastPage();
-                    break;
-            }
-        });
+    function firstPage() {
+      currentIndex = 0;
+      loadPage(currentIndex);
+    }
 
-        initializeViewer();
-    </script>
+    function lastPage() {
+      currentIndex = images.length - 1;
+      loadPage(currentIndex);
+    }
+
+    function jumpToPage() {
+      let pageNum = parseInt(document.getElementById("pageInput").value);
+      if (isNaN(pageNum) || pageNum < 1 || pageNum > totalPages) {
+        alert("Invalid page number! Must be between 1 and " + totalPages + ".");
+        return;
+      }
+      currentIndex = pageNum - 1;
+      loadPage(currentIndex);
+    }
+
+    document.getElementById("pageInput").addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+        jumpToPage();
+      }
+    });
+
+    // Listen for keyboard events to navigate pages
+    document.addEventListener("keydown", function (event) {
+      switch (event.key) {
+        case "ArrowLeft":
+          prevPage();
+          break;
+        case "ArrowRight":
+          nextPage();
+          break;
+        case "ArrowUp":
+          firstPage();
+          break;
+        case "ArrowDown":
+          lastPage();
+          break;
+      }
+    });
+
+    initializeViewer();
+  </script>
 
 </body>
 </html>
