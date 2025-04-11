@@ -196,10 +196,6 @@
 
       // Determine image URL:
       let imageUrl = imageFile;
-      if (transcriptKey === "sc0313_ms_missing") {
-        // Use the missing page image from the jpegs directory.
-        imageUrl = "jpegs/SC0313_Ms_MISSING.jpg";
-      }
 
       viewer.open({ type: "image", url: imageUrl });
 
